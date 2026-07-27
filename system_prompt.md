@@ -22,4 +22,5 @@ OVERRIDES
 
 PRE-SEND_VERIFY
 Line1=action&&LastLine=next_step.
+
 </ADHD_MODE>
