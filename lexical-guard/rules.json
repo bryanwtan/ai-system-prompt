@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "description": "Portable lexical rules for assistant output. Host-agnostic: consumed by check.py, enforced by any adapter.",
+  "rules": [
+    {
+      "id": "em-dash",
+      "severity": "error",
+      "message": "Em-dash or en-dash used as punctuation.",
+      "fix": "Use a period, a comma, or parentheses.",
+      "patterns": ["[\u2014\u2013]"]
+    },
+    {
+      "id": "contrast-frame",
+      "severity": "error",
+      "message": "\"Not X, it's Y\" contrast frame.",
+      "fix": "Assert Y directly and delete the negated half.",
+      "patterns": [
+        "\\b(?:it|this|that)(?:'s|s|\\s+is)\\s+not\\s+[^,.;!?\\n]{2,70},\\s*(?:but\\s+)?(?:it'?s|its|rather|instead)\\b",
+        "\\bis\\s?n'?t\\s+[^,.;!?\\n]{2,70},\\s*(?:but\\s+)?(?:it'?s|its|rather|instead)\\b",
+        "\\bnot\\s+(?:just|only|merely|simply)\\s+[^,.;!?\\n]{2,70},\\s*but\\b",
+        "\\bnot\\s+[^,.;!?\\n\u2014\u2013]{2,70}[\u2014\u2013]\\s*\\S"
+      ]
+    },
+    {
+      "id": "banned-word",
+      "severity": "error",
+      "message": "Banned empty intensifier.",
+      "fix": "Name the measured property or delete the word.",
+      "patterns": ["\\b(?:real|meaningful)\\b"],
+      "allow": [
+        "\\breal[-\\s]time\\b",
+        "\\breal[-\\s]world\\b",
+        "\\breal\\s+numbers?\\b",
+        "\\brealpath\\b",
+        "\\breal\\s+estate\\b"
+      ]
+    },
+    {
+      "id": "intensifier",
+      "severity": "warn",
+      "message": "Filler intensifier.",
+      "fix": "Delete it or replace with a measurement.",
+      "patterns": ["\\b(?:really|meaningfully|genuinely|truly|very|quite|fairly|somewhat)\\b"]
+    },
+    {
+      "id": "self-commentary",
+      "severity": "error",
+      "message": "Meta-commentary about own output.",
+      "fix": "State the finding with no framing.",
+      "patterns": [
+        "\\bworth (?:noting|mentioning|pointing out)\\b",
+        "\\bfor what it'?s worth\\b",
+        "\\bhonest gap\\b",
+        "\\bI (?:should|will|'ll) (?:note|mention|admit|confess)\\b",
+        "\\bto be (?:fair|honest|clear)\\b",
+        "\\b(?:in )?full transparency\\b"
+      ]
+    },
+    {
+      "id": "hedge",
+      "severity": "warn",
+      "message": "Hedge weakens the claim.",
+      "fix": "Assert the claim or state the unknown as a fact.",
+      "patterns": [
+        "\\b(?:arguably|presumably|possibly|perhaps)\\b",
+        "\\bI (?:think|believe|feel)\\b",
+        "\\bit seems (?:like|that|to)\\b",
+        "\\b(?:kind|sort) of\\b",
+        "\\bmight be worth\\b"
+      ]
+    },
+    {
+      "id": "closer",
+      "severity": "error",
+      "message": "Conversational closer.",
+      "fix": "End on the last substantive line.",
+      "patterns": [
+        "\\blet me know if\\b",
+        "\\bhope (?:this|that) helps\\b",
+        "\\bfeel free to\\b",
+        "\\bif you have any (?:other |further )?questions\\b",
+        "\\bhappy to (?:help|assist)\\b"
+      ]
+    },
+    {
+      "id": "sentence-heading",
+      "severity": "warn",
+      "message": "Heading is a sentence or conversational phrase.",
+      "fix": "Use a noun phrase, for example \"Current Status\".",
+      "patterns": [
+        "(?m)^#{1,6}\\s+(?:Where|What|How|Why|When|Who|Let|Here|There|Now)\\b",
+        "(?m)^#{1,6}\\s+.*\\b(?:is|are|was|were|will|should|can|does|do)\\b"
+      ]
+    }
+  ]
+}
