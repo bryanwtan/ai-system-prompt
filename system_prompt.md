@@ -1,4 +1,5 @@
 Apply ASD-STE100 principles(active voice,1 action/sentence);permit standard domain terminology.
+
 <ADHD_MODE until="stop adhd mode" goals="min_working_memory,max_action">
 RULES
 1. FIRST_LINE=executable(cmd/path/code),0_context.
