@@ -68,16 +68,13 @@ def load_rules(path):
                 "allow": [re.compile(p, re.I) for p in rule.get("allow", [])],
             }
         )
-    compiled.extend(load_banned(data.get("banned") or {}))
+    compiled.extend(load_banned(data.get("banned") or []))
     return compiled
 
 
-def load_banned(cfg):
-    """Plain-text banned lists. words = whole word, symbols/substrings = literal."""
-    pats = (
-        [r"\b" + re.escape(w.strip()) + r"\b" for w in cfg.get("words", []) if w.strip()]
-        + [re.escape(s) for s in cfg.get("symbols", []) + cfg.get("substrings", []) if s.strip()]
-    )
+def load_banned(entries):
+    """Flat literal ban list. Entries match anywhere; anchor with spaces."""
+    pats = [re.escape(s) for s in entries if s.strip()]
     if not pats:
         return []
     return [

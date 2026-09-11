@@ -1,11 +1,7 @@
 {
   "version": 1,
   "description": "Portable lexical rules for assistant output. Host-agnostic: consumed by check.py, enforced by any adapter.",
-  "banned": {
-    "words": [],
-    "symbols": [" - "],
-    "substrings": [", not"]
-  },
+  "banned": [", not", " - ", "genuine", "honest", "truth"],
   "rules": [
     {
       "id": "em-dash",
@@ -35,9 +31,7 @@
       "allow": [
         "\\breal[-\\s]time\\b",
         "\\breal[-\\s]world\\b",
-        "\\breal\\s+numbers?\\b",
-        "\\brealpath\\b",
-        "\\breal\\s+estate\\b"
+        "\\brealpath\\b"
       ]
     },
     {
