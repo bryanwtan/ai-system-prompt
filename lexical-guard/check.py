@@ -18,6 +18,9 @@ from pathlib import Path
 DEFAULT_RULES = Path(__file__).with_name("rules.json")
 SEVERITIES = ("warn", "error")
 
+IGNORE_LINE = re.compile(r"lexical-guard:\s*ignore(?!-file)", re.I)
+IGNORE_FILE = re.compile(r"lexical-guard:\s*ignore-file", re.I)
+
 
 def mask_code(text):
     """Blank out code and URLs, preserving offsets so line/col stay accurate."""
@@ -65,10 +68,37 @@ def load_rules(path):
                 "allow": [re.compile(p, re.I) for p in rule.get("allow", [])],
             }
         )
+    compiled.extend(load_banned(data.get("banned") or {}))
     return compiled
 
 
+def load_banned(cfg):
+    """Plain-text banned lists. words = whole word, symbols/substrings = literal."""
+    pats = (
+        [r"\b" + re.escape(w.strip()) + r"\b" for w in cfg.get("words", []) if w.strip()]
+        + [re.escape(s) for s in cfg.get("symbols", []) + cfg.get("substrings", []) if s.strip()]
+    )
+    if not pats:
+        return []
+    return [
+        {
+            "id": "banned",
+            "severity": "error",
+            "message": "Banned phrase.",
+            "fix": "Rephrase it.",
+            "patterns": [re.compile(p, re.I) for p in pats],
+            "allow": [],
+        }
+    ]
+
+
 def scan(text, rules, disabled=()):
+    if IGNORE_FILE.search(text):
+        return []
+
+    source_lines = text.split("\n")
+    exempt = {i + 1 for i, line in enumerate(source_lines) if IGNORE_LINE.search(line)}
+
     masked = mask_code(text)
     line_starts = [0]
     for i, ch in enumerate(masked):
@@ -98,8 +128,10 @@ def scan(text, rules, disabled=()):
                 key = (rule["id"], match.start())
                 if key in seen:
                     continue
-                seen.add(key)
                 line, col = position(match.start())
+                if line in exempt:
+                    continue
+                seen.add(key)
                 findings.append(
                     {
                         "rule": rule["id"],

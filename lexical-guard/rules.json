@@ -1,6 +1,11 @@
 {
   "version": 1,
   "description": "Portable lexical rules for assistant output. Host-agnostic: consumed by check.py, enforced by any adapter.",
+  "banned": {
+    "words": [],
+    "symbols": [" - "],
+    "substrings": [", not"]
+  },
   "rules": [
     {
       "id": "em-dash",
@@ -15,10 +20,10 @@
       "message": "\"Not X, it's Y\" contrast frame.",
       "fix": "Assert Y directly and delete the negated half.",
       "patterns": [
-        "\\b(?:it|this|that)(?:'s|s|\\s+is)\\s+not\\s+[^,.;!?\\n]{2,70},\\s*(?:but\\s+)?(?:it'?s|its|rather|instead)\\b",
-        "\\bis\\s?n'?t\\s+[^,.;!?\\n]{2,70},\\s*(?:but\\s+)?(?:it'?s|its|rather|instead)\\b",
-        "\\bnot\\s+(?:just|only|merely|simply)\\s+[^,.;!?\\n]{2,70},\\s*but\\b",
-        "\\bnot\\s+[^,.;!?\\n\u2014\u2013]{2,70}[\u2014\u2013]\\s*\\S"
+        "\\b(?:it|this|that)(?:'s|s|\\s+is)\\s+not\\s+[^,.;!?\\n]{1,70},\\s*(?:but\\s+)?(?:it'?s|it\\s+is|that'?s|that\\s+is|this\\s+is|rather|instead)\\b",
+        "\\bis\\s?n'?t\\s+[^,.;!?\\n]{1,70},\\s*(?:but\\s+)?(?:it'?s|it\\s+is|that'?s|that\\s+is|this\\s+is|rather|instead)\\b",
+        "\\bnot\\s+(?:just|only|merely|simply)\\s+[^,.;!?\\n]{1,70},\\s*but\\b",
+        "\\bnot\\s+[^,.;!?\\n\u2014\u2013]{1,70}[\u2014\u2013]\\s*\\S"
       ]
     },
     {
